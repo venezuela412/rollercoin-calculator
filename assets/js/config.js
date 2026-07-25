@@ -9,16 +9,18 @@ const CONFIG = {
   },
   /*
    * RollerCoin's API sends duplicate Access-Control-Allow-Origin headers,
-   * which browsers reject. If you deploy the included Cloudflare Worker
-   * (see cloudflare-worker/worker.js), paste its URL here — it becomes the
-   * primary, reliable data path. Example: "https://rc-proxy.YOU.workers.dev"
+   * which browsers reject. The public proxies below handle this — deploying
+   * the included Cloudflare Worker (cloudflare-worker/worker.js) is OPTIONAL
+   * and only makes loads faster/more reliable. Paste its URL here if used.
    */
   workerProxy: "",
-  /* Free public CORS proxies used as fallback (best effort, may be slow) */
+  /* Free public CORS proxies used as fallback (best effort, may be slow).
+     corsproxy.io verified working with browser Origin headers (2026-07). */
   publicProxies: [
+    (url) => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    (url) => `https://api.cors.lol/?url=${encodeURIComponent(url)}`,
     (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
     (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-    (url) => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
   ],
   coinGecko: (ids) =>
     `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(",")}&vs_currencies=usd`,
