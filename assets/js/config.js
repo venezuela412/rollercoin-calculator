@@ -9,11 +9,10 @@ const CONFIG = {
   },
   /*
    * RollerCoin's API sends duplicate Access-Control-Allow-Origin headers,
-   * which browsers reject. The public proxies below handle this — deploying
-   * the included Cloudflare Worker (cloudflare-worker/worker.js) is OPTIONAL
-   * and only makes loads faster/more reliable. Paste its URL here if used.
+   * which browsers reject. This Cloudflare Worker (free tier) proxies the
+   * public API with clean CORS headers. Public proxies below are fallbacks.
    */
-  workerProxy: "",
+  workerProxy: "https://rc-proxy.deficarlos.workers.dev",
   /* Free public CORS proxies used as fallback (best effort, may be slow).
      corsproxy.io verified working with browser Origin headers (2026-07). */
   publicProxies: [
