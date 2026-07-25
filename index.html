@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RollerCoin Calculator · Smart Edition</title>
+  <meta name="description" content="Free RollerCoin earnings calculator: paste your profile and instantly see estimated daily earnings per coin, the best coin to mine and your optimal power split. English & Español.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐹</text></svg>">
+  <link rel="stylesheet" href="assets/css/font.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <meta property="og:title" content="RollerCoin Calculator · Smart Edition">
+  <meta property="og:description" content="Paste your RollerCoin profile and estimate your daily earnings per coin — no manual input. Free & open source. EN/ES.">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <header>
+    <h1>🐹 <span data-i18n="title">RollerCoin Calculator</span>
+      <span class="highlight-tag" data-i18n="subtitle">Smart Edition</span>
+    </h1>
+    <p class="tagline" data-i18n="tagline">Paste your profile. Get your earnings. No typing, no mistakes.</p>
+    <button id="langToggle" class="lang-toggle" type="button">Español</button>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#profile" data-tab="secProfile" class="active" data-i18n="nav_profile">Profile Earnings</a></li>
+      <li><a href="#best" data-tab="secBest" data-i18n="nav_best">Best Coins to Mine</a></li>
+      <li><a href="#manual" data-tab="secManual" data-i18n="nav_manual">Manual Calculator</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <!-- ============ PROFILE ============ -->
+    <section id="secProfile">
+      <div class="roller-section">
+        <label for="profileInput" data-i18n="profile_label">RollerCoin profile URL or username</label>
+        <div class="roller-input-group">
+          <input id="profileInput" type="text" class="roller-input"
+                 placeholder="https://rollercoin.com/p/cryptorell"
+                 data-i18n-placeholder="profile_placeholder" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="btn-row">
+          <div class="tree-dimensional-button btn-default">
+            <input id="analyzeBtn" type="button" value="Analyze" data-i18n-value="profile_button">
+          </div>
+        </div>
+        <p id="profileStatus" class="status"></p>
+        <div class="badges">
+          <span id="priceBadge" class="badge"></span>
+          <span id="miningBadge" class="badge"></span>
+        </div>
+      </div>
+
+      <div id="profileResults" class="hidden">
+        <div class="roller-section profile-card">
+          <div class="profile-head">
+            <div>
+              <p class="profile-name" id="pName">—</p>
+              <p class="profile-meta">
+                <span data-i18n="power_league">League</span>:
+                <img id="pLeagueImg" class="league-img hidden" alt="league">
+                <strong id="pLeague">—</strong>
+                &nbsp;·&nbsp;<span data-i18n="power_registered">Roller since</span>: <span id="pSince">—</span>
+              </p>
+            </div>
+            <div class="profile-total">
+              <p class="total-label" data-i18n="power_total">Total power</p>
+              <p class="total-value" id="pwTotal">—</p>
+            </div>
+          </div>
+          <div class="power-grid">
+            <div class="power-cell"><span data-i18n="power_miners">Miners</span><strong id="pwMiners">—</strong></div>
+            <div class="power-cell"><span data-i18n="power_bonus">Bonus</span><strong id="pwBonus">—</strong></div>
+            <div class="power-cell"><span data-i18n="power_games">Games</span><strong id="pwGames">—</strong></div>
+            <div class="power-cell"><span data-i18n="power_temp">Temp / event</span><strong id="pwTemp">—</strong></div>
+          </div>
+        </div>
+
+        <div class="roller-section">
+          <h2 class="section-title" data-i18n="earnings_title">Estimated earnings</h2>
+          <div class="table-responsive">
+            <table class="roller-table">
+              <thead>
+                <tr>
+                  <th data-i18n="col_coin">Coin</th>
+                  <th data-i18n="col_block">Per block</th>
+                  <th data-i18n="col_daily">Per day</th>
+                  <th data-i18n="col_usd_daily">USD / day</th>
+                  <th data-i18n="col_monthly">USD / month</th>
+                </tr>
+              </thead>
+              <tbody id="earningsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="roller-section advice" id="adviceWrap">
+          <h2 class="section-title" data-i18n="advice_title">Smart advice</h2>
+          <div id="adviceBox"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BEST COINS ============ -->
+    <section id="secBest" class="hidden">
+      <div class="roller-section">
+        <h2 class="section-title" data-i18n="best_title">Best coins to mine</h2>
+        <p id="bestRef" class="muted"></p>
+        <div class="table-responsive">
+          <table class="roller-table">
+            <thead>
+              <tr>
+                <th data-i18n="col_coin">Coin</th>
+                <th data-i18n="col_usd_daily">USD / day</th>
+                <th data-i18n="col_monthly">USD / month</th>
+              </tr>
+            </thead>
+            <tbody id="bestBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MANUAL ============ -->
+    <section id="secManual" class="hidden">
+      <div class="roller-section">
+        <h2 class="section-title" data-i18n="manual_title">Manual calculator</h2>
+
+        <div class="form-group">
+          <label for="mCoin" data-i18n="col_coin">Coin</label>
+          <select id="mCoin" class="roller-select full"></select>
+        </div>
+
+        <div class="form-group">
+          <label for="mNetwork" data-i18n="manual_network">Network power</label>
+          <div class="roller-input-group">
+            <input id="mNetwork" type="number" class="roller-input">
+            <select id="mNetworkUnit" class="roller-select"></select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="mUser" data-i18n="manual_user">Your power</label>
+          <div class="roller-input-group">
+            <input id="mUser" type="number" class="roller-input">
+            <select id="mUserUnit" class="roller-select"></select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="mReward" data-i18n="manual_reward">Block reward</label>
+          <div class="roller-input-group">
+            <input id="mReward" type="number" class="roller-input" step="any">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="mTime" data-i18n="manual_time">Time per block</label>
+          <div class="roller-input-group">
+            <input id="mTime" type="number" class="roller-input">
+            <select id="mTimeUnit" class="roller-select">
+              <option value="SECONDS" data-i18n="seconds">Seconds</option>
+              <option value="MINUTES" data-i18n="minutes">Minutes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <div class="tree-dimensional-button btn-default">
+            <input id="manualBtn" type="button" value="Calculate" data-i18n-value="manual_button">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="roller-table">
+            <tbody id="manualBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ JOIN / REFERRAL ============ -->
+  <aside class="roller-section join-banner">
+    <div>
+      <p class="join-title" data-i18n="join_title">New to RollerCoin?</p>
+      <p class="muted" data-i18n="join_text">Join with this link and get a head start bonus.</p>
+    </div>
+    <a id="joinBtn" class="join-btn" href="#" target="_blank" rel="noopener sponsored">
+      🎮 <span data-i18n="join_button">Play RollerCoin</span>
+    </a>
+  </aside>
+
+  <!-- ============ DISCLAIMER ============ -->
+  <aside class="disclaimer">
+    <strong>⚠️ <span data-i18n="disclaimer_title">Approximate data</span>:</strong>
+    <span data-i18n="disclaimer"></span>
+  </aside>
+
+  <footer>
+    <section class="top-footer">
+      <p class="title" data-i18n="follow_title">Follow me</p>
+      <ul class="social-media">
+        <li><a id="ytLink" href="#" target="_blank" rel="noopener" title="YouTube">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/></svg>
+        </a></li>
+        <li><a id="waLink" href="#" target="_blank" rel="noopener" title="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 2 .5 4 1.5 5.7L.5 23.5l5.9-1.5A11.4 11.4 0 0 0 12 23.5 11.5 11.5 0 0 0 12 .5zm0 21a9.4 9.4 0 0 1-4.8-1.3l-.3-.2-3.5.9.9-3.4-.2-.4A9.5 9.5 0 1 1 12 21.5zm5.2-7.1c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1a7.8 7.8 0 0 1-3.8-3.3c-.3-.5.3-.5.8-1.6.1-.2 0-.4 0-.5l-.9-2.1c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z"/></svg>
+        </a></li>
+        <li><a id="tgLink" href="#" target="_blank" rel="noopener" title="Telegram">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.9 3.6 20.3 20.8c-.3 1.2-1 1.5-2 1L13 18.4l-2.6 2.5c-.3.3-.5.5-1.1.5l.4-5.5L19.7 6.9c.4-.4-.1-.6-.7-.2L7.2 14.7 1.9 13c-1.1-.4-1.2-1.1.3-1.7L22.7 2.2c.9-.3 1.7.2 1.2 1.4z"/></svg>
+        </a></li>
+      </ul>
+    </section>
+
+    <section class="donate">
+      <p class="title" data-i18n="donate_title">Support this project</p>
+      <p class="muted" data-i18n="donate_text">If this tool helps you, consider a small donation:</p>
+      <div class="donate-row">
+        <code id="donateAddr"></code>
+        <button id="donateCopy" type="button" class="copy-btn">Copy</button>
+      </div>
+    </section>
+
+    <section class="bottom-footer">
+      <p data-i18n="made_with">Made with 🐹 by Deficarlos — free & open source</p>
+      <p class="muted">
+        <a id="repoLink" href="#" target="_blank" rel="noopener">GitHub</a> ·
+        <span data-i18n="credit">Inspired by Lmendev's original rollercoin-calculator</span>
+      </p>
+    </section>
+  </footer>
+
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/calculator.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

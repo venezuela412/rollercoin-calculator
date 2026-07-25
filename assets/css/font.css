@@ -1,0 +1,7 @@
+/* PixelOperatorSC — public domain pixel font (by javateer),
+   served via jsDelivr CDN from the original Lmendev repo. */
+@font-face {
+  font-family: pixelSC;
+  src: url("https://cdn.jsdelivr.net/gh/Lmendev/rollercoin-calculator@main/src/fonts/PixelOperatorSC.ttf") format("truetype");
+  font-display: swap;
+}
