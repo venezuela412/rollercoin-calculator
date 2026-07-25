@@ -6,7 +6,7 @@
   "rltUsdPrice": 1.0,
   "coins": {
     "BTC":  { "name": "Bitcoin",   "color": "#f7931a", "coinGeckoId": "bitcoin",       "dailyReward": 0.004 },
-    "ETH":  { "name": "Ethereum",  "color": "#987eff", "coinGeckoId": "ethereum",      "dailyReward": 0.07 },
+    "ETH":  { "name": "Ethereum",  "color": "#987eff", "coinGeckoId": "ethereum",      "dailyReward": 0.1224 },
     "DOGE": { "name": "Dogecoin",  "color": "#c2a633", "coinGeckoId": "dogecoin",      "dailyReward": 1400 },
     "BNB":  { "name": "BNB",       "color": "#f3ba2f", "coinGeckoId": "binancecoin",   "dailyReward": 0.44 },
     "POL":  { "name": "Polygon",   "color": "#8247e5", "coinGeckoId": "matic-network", "dailyReward": 55 },
@@ -21,10 +21,10 @@
     "HMT":  { "name": "Hamster Token", "color": "#e771fe", "coinGeckoId": null,        "dailyReward": 1400 }
   },
   "leaguePowerZH": {
-    "_comment": "Estimated TOTAL power mining each coin inside an average mid-tier (platinum) league, in Zh/s (1 Zh/s = 1000 Eh/s). Top players have 40-200 Zh/s each (leaderboard, 2026-07), so league totals are in the thousands. Calibrate against the in-game 'League Power' panel and send a PR.",
-    "BTC": 3000, "ETH": 2200, "DOGE": 2000, "BNB": 1600, "POL": 1300,
-    "SOL": 1700, "LTC": 1400, "XRP": 1200, "TRX": 1100, "USDT": 900, "ALGO": 700,
-    "RLT": 2600, "RST": 1000, "HMT": 800
+    "_comment": "Total power mining each coin inside a mid-tier (Platinum III) league, in Zh/s. ETH calibrated from REAL in-game data (2026-07-25: network 44.581 Zh/s, league total 488.134 Zh/s); other coins distributed proportionally by estimated popularity. Calibrate against your in-game 'Network power' panel and send a PR.",
+    "BTC": 67.8, "ETH": 44.581, "DOGE": 45.2, "BNB": 36.1, "POL": 29.4,
+    "SOL": 38.4, "LTC": 31.6, "XRP": 27.1, "TRX": 24.9, "USDT": 20.3, "ALGO": 15.8,
+    "RLT": 58.8, "RST": 22.6, "HMT": 18.1
   },
   "leagueTierMultiplier": {
     "_comment": "Approximate scaling of league total power by tier. Higher leagues concentrate more power.",

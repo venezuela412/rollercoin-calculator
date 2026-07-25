@@ -81,7 +81,7 @@ async function getPrices(coinGeckoIds) {
 
 /* Bundled mining parameters */
 async function getMiningData() {
-  const res = await fetch("data/mining.json");
+  const res = await fetch("data/mining.json?v=3");
   if (!res.ok) throw new Error("mining.json missing");
   return res.json();
 }
