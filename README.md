@@ -21,9 +21,11 @@
 **ES** — Una evolución gratuita, open-source y más inteligente de la clásica calculadora de RollerCoin. En lugar de rellenar campos a mano (y cometer errores), solo **pegas el enlace de tu perfil de RollerCoin** y la app obtiene tu poder de minería real automáticamente, luego estima:
 
 - 📊 **Earnings per coin** — per block, per day, per month (in crypto **and** USD with live prices)
-- 🏆 **Best coin to mine right now** — ranked by real USD value
+- 🏆 **Best coin to mine right now** — ranked by real USD value, all 14 mineable coins (BTC, ETH, SOL, BNB, DOGE, LTC, XRP, TRX, POL, USDT, ALGO, RLT, RST, HMT)
 - ⚖️ **Optimal split advice** — where to point your power for maximum profit
-- 🕹️ **Classic manual calculator** — with smart auto-filled values
+- 🎟️ **Season Pass analyzer** — is the standard or complete pass worth it for YOUR power? Cost vs. gain, ROI and payback days
+- 💰 **ROI / Investment calculator** — see what investing $X in miners would earn per day / week / month on every coin, with the best option highlighted
+- 🕹️ **Classic manual calculator** — with smart auto-filled values, now up to ZH/s
 - 🌐 **English & Español** — one click language switch
 - 🔄 **Always up to date** — prices refresh automatically every day via GitHub Actions
 
@@ -43,7 +45,7 @@
    - 📊 **Estimated earnings table** — what you earn per block / day / month with each coin, in crypto and USD (live prices).
    - 🏆 **BEST badge** — the most profitable coin for you right now.
    - 💡 **Smart advice** — recommended coin and split configuration (e.g. 100% BTC, or 70/30 if you want two withdrawal tracks).
-5. **Explore the tabs:** *Best Coins to Mine* (ranking for your power) and *Manual Calculator* (classic mode, auto-filled).
+5. **Explore the tabs:** *Best Coins to Mine* (ranking for your power), *Season Pass* (is the standard or complete pass worth it for you?), *ROI / Invest* (what would investing $X in miners earn?) and *Manual Calculator* (classic mode, auto-filled).
 6. **Share your analysis** — the app supports deep links: `https://venezuela412.github.io/rollercoin-calculator/?p=yourname` auto-analyzes that profile.
 
 **ES**
@@ -56,7 +58,7 @@
    - 📊 **Tabla de ganancias estimadas** — lo que ganas por bloque / día / mes con cada moneda, en cripto y USD (precios en vivo).
    - 🏆 **Etiqueta MEJOR** — la moneda más rentable para ti ahora mismo.
    - 💡 **Consejo inteligente** — moneda recomendada y configuración de split (ej. 100% BTC, o 70/30 si quieres dos vías de retiro).
-5. **Explora las pestañas:** *Mejores monedas* (ranking con tu poder) y *Calculadora manual* (modo clásico, auto-rellenado).
+5. **Explora las pestañas:** *Mejores monedas* (ranking con tu poder), *Pase de Temporada* (¿vale la pena el pase estándar o completo para ti?), *ROI / Inversión* (¿cuánto ganarías invirtiendo $X en mineros?) y *Calculadora manual* (modo clásico, auto-rellenado).
 6. **Comparte tu análisis** — la app admite enlaces directos: `https://venezuela412.github.io/rollercoin-calculator/?p=tunombre` analiza ese perfil automáticamente.
 
 > 🌐 Switch language anytime with the **Español / English** button in the header. / Cambia el idioma cuando quieras con el botón del encabezado.
@@ -74,7 +76,6 @@ Live prices (CoinGecko) + community mining data
 
 - No accounts, no API keys, no manual fields.
 - 100% static site — hosted free on **GitHub Pages**.
-- Profile data is served through a free **Cloudflare Worker** CORS proxy (see [`cloudflare-worker/`](cloudflare-worker/worker.js)) with public-proxy fallbacks.
 - Mining parameters live in [`data/mining.json`](data/mining.json) and can be improved by anyone via Pull Request.
 
 ## 🛠️ Run locally / Ejecutar en local

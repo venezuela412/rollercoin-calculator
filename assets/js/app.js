@@ -1,5 +1,5 @@
 /* RollerCoin Calculator — Smart Edition
- * UI wiring: tabs, i18n, profile analysis, best coins, manual calc
+ * UI wiring: tabs, i18n, profile analysis, best coins, season pass, ROI, manual calc
  */
 
 const state = {
@@ -9,7 +9,7 @@ const state = {
   prices: {},
   pricesLive: false,
   pricesDate: null,
-  userPowerMH: null,     // set after profile analysis
+  userPowerGH: null,     // set after profile analysis (raw API unit: GH/s)
   leagueTier: "default",
   earnings: null,
 };
@@ -23,18 +23,15 @@ function t(key, ...args) {
 function applyLang() {
   document.documentElement.lang = state.lang;
   document.querySelectorAll("[data-i18n]").forEach((el) => {
-    const key = el.getAttribute("data-i18n");
-    const v = I18N[state.lang][key];
+    const v = I18N[state.lang][el.getAttribute("data-i18n")];
     if (typeof v === "string") el.textContent = v;
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-    const key = el.getAttribute("data-i18n-placeholder");
-    const v = I18N[state.lang][key];
+    const v = I18N[state.lang][el.getAttribute("data-i18n-placeholder")];
     if (typeof v === "string") el.placeholder = v;
   });
   document.querySelectorAll("[data-i18n-value]").forEach((el) => {
-    const key = el.getAttribute("data-i18n-value");
-    const v = I18N[state.lang][key];
+    const v = I18N[state.lang][el.getAttribute("data-i18n-value")];
     if (typeof v === "string") el.value = v;
   });
   document.getElementById("langToggle").textContent = t("language");
@@ -86,13 +83,14 @@ async function analyzeProfile() {
   try {
     const profile = await getPublicProfile(username);
     const power = await getUserPower(profile.avatar_id);
-    state.userPowerMH = power.current_power || ((power.miners || 0) + (power.bonus || 0) + (power.games || 0) + (power.temp || 0));
+    state.userPowerGH = power.current_power || ((power.miners || 0) + (power.bonus || 0) + (power.games || 0) + (power.temp || 0));
     state.leagueTier = leagueTierKey(profile.league && profile.league.title && profile.league.title.en);
     renderProfile(profile, power);
-    state.earnings = estimateEarnings(state.userPowerMH, state.mining, state.prices, state.leagueTier);
+    state.earnings = estimateEarnings(state.userPowerGH, state.mining, state.prices, state.leagueTier);
     renderEarnings(state.earnings);
     renderAdvice(state.earnings);
     renderBestCoins();
+    renderSeasonPass();
     resultsEl.classList.remove("hidden");
     statusEl.textContent = "";
     statusEl.className = "status";
@@ -111,11 +109,15 @@ function renderProfile(profile, power) {
   if (profile.league && profile.league.main_img_url) { lgImg.src = profile.league.main_img_url; lgImg.classList.remove("hidden"); }
   else lgImg.classList.add("hidden");
   document.getElementById("pSince").textContent = profile.registration ? profile.registration.slice(0, 10) : "—";
-  document.getElementById("pwTotal").textContent = formatPower(state.userPowerMH);
+  document.getElementById("pwTotal").textContent = formatPower(state.userPowerGH);
   document.getElementById("pwMiners").textContent = formatPower(power.miners || 0);
   document.getElementById("pwBonus").textContent = formatPower(power.bonus || 0);
   document.getElementById("pwGames").textContent = formatPower(power.games || 0);
   document.getElementById("pwTemp").textContent = formatPower(power.temp || 0);
+}
+
+function coinBadge(r) {
+  return `<span class="coin-badge" style="background:${r.color}">${r.ticker.slice(0, 3)}</span>`;
 }
 
 function renderEarnings(rows) {
@@ -125,7 +127,7 @@ function renderEarnings(rows) {
     const tr = document.createElement("tr");
     if (i === 0) tr.className = "best-row";
     tr.innerHTML = `
-      <td><span class="coin-cell"><span class="coin-badge" style="background:${r.color}">${r.ticker.slice(0, 3)}</span>
+      <td><span class="coin-cell">${coinBadge(r)}
         <span>${r.ticker}${i === 0 ? ` <span class="best-badge">${t("best_badge")}</span>` : ""}</span></span></td>
       <td>${formatCoin(r.perBlock)}</td>
       <td>${formatCoin(r.perDay)}</td>
@@ -146,23 +148,35 @@ function renderAdvice(rows) {
   box.innerHTML = html;
 }
 
+/* ---------- helpers ---------- */
+function activePowerGH() {
+  return state.userPowerGH != null ? state.userPowerGH : CONFIG.referencePowerEH * 1e9;
+}
+function bestDailyUsd() {
+  const rows = state.userPowerGH != null && state.earnings
+    ? state.earnings
+    : estimateEarnings(CONFIG.referencePowerEH * 1e9, state.mining, state.prices, "default");
+  const best = rows.find((r) => r.usdDay != null);
+  return best ? best.usdDay : 0;
+}
+
 /* ---------- best coins tab ---------- */
 function renderBestCoins() {
-  const usingOwn = state.userPowerMH != null;
-  const powerMH = usingOwn ? state.userPowerMH : CONFIG.referencePowerTH * 1e6;
+  const usingOwn = state.userPowerGH != null;
+  const powerGH = activePowerGH();
   const rows = usingOwn && state.earnings
     ? state.earnings
-    : estimateEarnings(powerMH, state.mining, state.prices, "default");
+    : estimateEarnings(powerGH, state.mining, state.prices, "default");
   document.getElementById("bestRef").textContent = usingOwn
-    ? "⭐ " + t("best_your_power") + ` (${formatPower(powerMH)})`
-    : t("best_reference", formatPower(powerMH));
+    ? "⭐ " + t("best_your_power") + ` (${formatPower(powerGH)})`
+    : t("best_reference", formatPower(powerGH));
   const tbody = document.getElementById("bestBody");
   tbody.innerHTML = "";
   rows.forEach((r, i) => {
     const tr = document.createElement("tr");
     if (i === 0) tr.className = "best-row";
     tr.innerHTML = `
-      <td><span class="coin-cell"><span class="coin-badge" style="background:${r.color}">${r.ticker.slice(0, 3)}</span>
+      <td><span class="coin-cell">${coinBadge(r)}
         <span>${r.name} (${r.ticker})${i === 0 ? ` <span class="best-badge">${t("best_badge")}</span>` : ""}</span></span></td>
       <td>${r.usdDay != null ? formatUsd(r.usdDay) : "—"}</td>
       <td>${r.usdMonth != null ? formatUsd(r.usdMonth) : "—"}</td>`;
@@ -170,20 +184,72 @@ function renderBestCoins() {
   });
 }
 
-/* ---------- manual calculator ---------- */
-const UNITS = ["GH/s", "TH/s", "PH/s", "EH/s"];
+/* ---------- season pass tab ---------- */
+function renderSeasonPass() {
+  const pass = state.mining.seasonPass;
+  if (!pass) return;
+  const usingOwn = state.userPowerGH != null;
+  document.getElementById("seasonUsing").textContent = t("season_using",
+    usingOwn ? t("season_your_profile") : t("season_reference", formatPower(CONFIG.referencePowerEH * 1e9)));
+  const results = analyzeSeasonPass(bestDailyUsd(), pass, state.mining.rltUsdPrice);
+  const tbody = document.getElementById("seasonBody");
+  tbody.innerHTML = "";
+  results.forEach((r) => {
+    const tr = document.createElement("tr");
+    if (r.worthIt) tr.className = "best-row";
+    tr.innerHTML = `
+      <td>${t(r.key === "standard" ? "season_standard" : "season_complete")}
+        ${r.worthIt ? ` <span class="best-badge">${t("season_worth")}</span>` : ` <span class="muted">${t("season_not_worth")}</span>`}</td>
+      <td>${formatUsd(r.costUsd)}</td>
+      <td>${formatUsd(r.totalGainUsd)}</td>
+      <td>${r.netUsd >= 0 ? "+" : ""}${formatUsd(r.netUsd)}</td>
+      <td>${r.roiPct.toFixed(0)}%</td>
+      <td>${isFinite(r.paybackDays) ? t("season_days", Math.ceil(r.paybackDays)) : "—"}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById("seasonNote").textContent = "ℹ️ " + t("season_note");
+}
 
+/* ---------- ROI / invest tab ---------- */
+function runRoi() {
+  const usd = parseFloat(document.getElementById("roiAmount").value) || 0;
+  const out = document.getElementById("roiResults");
+  if (usd <= 0) { out.classList.add("hidden"); return; }
+  const r = analyzeInvestment(usd, state.mining, state.prices, state.leagueTier);
+  document.getElementById("roiSummary").textContent =
+    "💰 " + t("roi_summary", usd.toLocaleString("en-US"), formatCoin(r.rlt), formatPower(r.powerGH));
+  document.getElementById("roiBest").textContent = r.best
+    ? "🏆 " + t("roi_best", r.best.ticker, formatUsd(r.best.usdMonth)) : "";
+  document.getElementById("roiPayback").textContent = isFinite(r.paybackMonths) && r.paybackMonths <= 600
+    ? "⏳ " + t("roi_payback", r.paybackMonths.toFixed(1)) : "⏳ " + t("roi_payback_never");
+  const tbody = document.getElementById("roiBody");
+  tbody.innerHTML = "";
+  r.rows.forEach((row, i) => {
+    const tr = document.createElement("tr");
+    if (i === 0) tr.className = "best-row";
+    tr.innerHTML = `
+      <td><span class="coin-cell">${coinBadge(row)}
+        <span>${row.ticker}${i === 0 ? ` <span class="best-badge">${t("best_badge")}</span>` : ""}</span></span></td>
+      <td>${row.usdDay != null ? formatUsd(row.usdDay) : "—"}</td>
+      <td>${row.usdWeek != null ? formatUsd(row.usdWeek) : "—"}</td>
+      <td>${row.usdMonth != null ? formatUsd(row.usdMonth) : "—"}</td>`;
+    tbody.appendChild(tr);
+  });
+  out.classList.remove("hidden");
+}
+
+/* ---------- manual calculator ---------- */
 function initManual() {
   const netSel = document.getElementById("mNetworkUnit");
   const userSel = document.getElementById("mUserUnit");
-  UNITS.forEach((u) => {
+  POWER_UNITS.forEach((u) => {
     netSel.add(new Option(u, u));
     userSel.add(new Option(u, u));
   });
-  netSel.value = "EH/s";
-  userSel.value = "TH/s";
+  netSel.value = "ZH/s";
+  userSel.value = "EH/s";
   const coinSel = document.getElementById("mCoin");
-  Object.entries(state.mining.coins).forEach(([ticker, c]) => coinSel.add(new Option(ticker, ticker)));
+  Object.entries(state.mining.coins).forEach(([ticker]) => coinSel.add(new Option(ticker, ticker)));
   coinSel.addEventListener("change", prefillManual);
   prefillManual();
 }
@@ -193,23 +259,22 @@ function prefillManual() {
   const coin = state.mining.coins[ticker];
   document.getElementById("mReward").value = (coin.dailyReward / state.mining.blocksPerDay).toPrecision(4);
   document.getElementById("mTime").value = state.mining.secondsPerBlock;
-  document.getElementById("mNetwork").value = state.mining.leaguePowerEH[ticker] || "";
-  document.getElementById("mNetworkUnit").value = "EH/s";
+  document.getElementById("mNetwork").value = state.mining.leaguePowerZH[ticker] || "";
+  document.getElementById("mNetworkUnit").value = "ZH/s";
 }
 
 function runManual() {
   const ticker = document.getElementById("mCoin").value;
   const coin = state.mining.coins[ticker];
-  const networkMH = (parseFloat(document.getElementById("mNetwork").value) || 0) *
-    MH_PER[document.getElementById("mNetworkUnit").value];
-  const userMH = (parseFloat(document.getElementById("mUser").value) || 0) *
-    MH_PER[document.getElementById("mUserUnit").value];
+  const networkGH = unitToGH(parseFloat(document.getElementById("mNetwork").value) || 0,
+    document.getElementById("mNetworkUnit").value);
+  const userGH = unitToGH(parseFloat(document.getElementById("mUser").value) || 0,
+    document.getElementById("mUserUnit").value);
   let seconds = parseFloat(document.getElementById("mTime").value) || 600;
   if (document.getElementById("mTimeUnit").value === "MINUTES") seconds *= 60;
   const reward = parseFloat(document.getElementById("mReward").value) || 0;
-  const price = coin.coinGeckoId ? state.prices[coin.coinGeckoId]
-    : ticker === "RLT" ? state.mining.rltUsdPrice : null;
-  const r = manualReward({ networkPowerMH: networkMH, userPowerMH: userMH, blockReward: reward, secondsPerBlock: seconds }, price);
+  const price = coinUsdPrice(ticker, coin, state.prices, state.mining);
+  const r = manualReward({ networkPowerGH: networkGH, userPowerGH: userGH, blockReward: reward, secondsPerBlock: seconds }, price);
   const rows = [
     [t("manual_expected"), r.perBlock, r.usdPerBlock],
     [t("manual_daily"), r.daily, r.usdDaily],
@@ -227,7 +292,12 @@ function renderDynamic() {
     renderEarnings(state.earnings);
     renderAdvice(state.earnings);
   }
-  if (state.mining) renderBestCoins();
+  if (state.mining) {
+    renderBestCoins();
+    renderSeasonPass();
+    if (!document.getElementById("roiResults").classList.contains("hidden")) runRoi();
+    runManual();
+  }
 }
 
 /* ---------- misc UI ---------- */
@@ -268,6 +338,7 @@ function initCopy() {
   initCopy();
   initManual();
   renderBestCoins();
+  renderSeasonPass();
 
   document.getElementById("langToggle").addEventListener("click", toggleLang);
   document.getElementById("analyzeBtn").addEventListener("click", analyzeProfile);
@@ -275,6 +346,10 @@ function initCopy() {
     if (e.key === "Enter") analyzeProfile();
   });
   document.getElementById("manualBtn").addEventListener("click", runManual);
+  document.getElementById("roiBtn").addEventListener("click", runRoi);
+  document.getElementById("roiAmount").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") runRoi();
+  });
   document.querySelectorAll("nav a[data-tab]").forEach((a) =>
     a.addEventListener("click", (e) => { e.preventDefault(); showTab(a.getAttribute("data-tab")); }));
 
