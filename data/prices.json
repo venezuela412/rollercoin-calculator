@@ -1,0 +1,15 @@
+{
+  "updatedAt": "2026-07-25T00:00:00Z",
+  "source": "coingecko",
+  "usd": {
+    "bitcoin": 118000,
+    "ethereum": 3700,
+    "dogecoin": 0.24,
+    "binancecoin": 780,
+    "matic-network": 0.24,
+    "solana": 185,
+    "litecoin": 115,
+    "ripple": 3.1,
+    "tron": 0.33
+  }
+}

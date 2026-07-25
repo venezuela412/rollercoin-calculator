@@ -1,0 +1,30 @@
+{
+  "updatedAt": "2026-07-25",
+  "note": "Approximate community-maintained mining parameters. RollerCoin does not publish per-league network power publicly, so these values are estimates and may drift from in-game values. Contributions welcome via PR.",
+  "blocksPerDay": 144,
+  "secondsPerBlock": 600,
+  "rltUsdPrice": 1.0,
+  "coins": {
+    "BTC":  { "name": "Bitcoin",   "color": "#f7931a", "coinGeckoId": "bitcoin",       "dailyReward": 0.00037 },
+    "ETH":  { "name": "Ethereum",  "color": "#627eea", "coinGeckoId": "ethereum",      "dailyReward": 0.0065 },
+    "DOGE": { "name": "Dogecoin",  "color": "#c2a633", "coinGeckoId": "dogecoin",      "dailyReward": 135 },
+    "BNB":  { "name": "BNB",       "color": "#f3ba2f", "coinGeckoId": "binancecoin",   "dailyReward": 0.042 },
+    "POL":  { "name": "Polygon",   "color": "#8247e5", "coinGeckoId": "matic-network", "dailyReward": 5.2 },
+    "SOL":  { "name": "Solana",    "color": "#14f195", "coinGeckoId": "solana",        "dailyReward": 0.22 },
+    "LTC":  { "name": "Litecoin",  "color": "#345d9d", "coinGeckoId": "litecoin",      "dailyReward": 0.014 },
+    "XRP":  { "name": "XRP",       "color": "#00aae4", "coinGeckoId": "ripple",        "dailyReward": 11.5 },
+    "TRX":  { "name": "Tron",      "color": "#eb0029", "coinGeckoId": "tron",          "dailyReward": 58 },
+    "RLT":  { "name": "RollerToken", "color": "#ffcf3f", "coinGeckoId": null,          "dailyReward": 19 },
+    "RST":  { "name": "Roller Season Token", "color": "#8a8fa3", "coinGeckoId": null,  "dailyReward": 145 }
+  },
+  "leaguePowerEH": {
+    "_comment": "Estimated TOTAL power mining each coin inside an average mid-tier league, in EH/s. Tier multipliers below scale these for lower/higher leagues.",
+    "BTC": 900, "ETH": 700, "DOGE": 620, "BNB": 520, "POL": 420,
+    "SOL": 500, "LTC": 460, "XRP": 410, "TRX": 360, "RLT": 820, "RST": 320
+  },
+  "leagueTierMultiplier": {
+    "_comment": "Approximate scaling of league total power by tier. Higher leagues concentrate more power.",
+    "bronze": 0.15, "silver": 0.30, "gold": 0.55, "platinum": 1.0,
+    "diamond": 1.6, "master": 2.5, "grandmaster": 3.5, "elite": 5.0, "default": 1.0
+  }
+}
