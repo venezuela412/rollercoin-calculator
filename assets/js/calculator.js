@@ -1,21 +1,25 @@
 /* RollerCoin Calculator — Smart Edition
- * Math engine: earnings per coin, best coin, split advice
+ * Math engine: earnings per coin, best coin, season pass & ROI analysis
  *
- * Power units: the RollerCoin public API returns raw power in MH/s.
- * 1 EH/s = 1e12 MH/s. League power estimates in data/mining.json are EH/s.
+ * Power units: the RollerCoin public API returns raw power in GH/s.
+ * 1 Zh/s = 1e12 GH/s · 1 Eh/s = 1e9 GH/s · 1 Ph/s = 1e6 · 1 Th/s = 1e3
+ * League power estimates in data/mining.json are in Zh/s.
  */
 
-const MH_PER = { "GH/s": 1e3, "TH/s": 1e6, "PH/s": 1e9, "EH/s": 1e12 };
+const POWER_UNITS = ["GH/s", "TH/s", "PH/s", "EH/s", "ZH/s"];
+const GH_PER = { "GH/s": 1, "TH/s": 1e3, "PH/s": 1e6, "EH/s": 1e9, "ZH/s": 1e12 };
 
-function mhTo(mh, unit) { return mh / MH_PER[unit]; }
+function ghTo(gh, unit) { return gh / GH_PER[unit]; }
+function unitToGH(v, unit) { return v * GH_PER[unit]; }
 
-/* Auto-scale a raw MH/s value into a human string */
-function formatPower(mh) {
-  if (!isFinite(mh) || mh <= 0) return "0 GH/s";
-  if (mh >= 1e12) return trimNum(mh / 1e12, 2) + " EH/s";
-  if (mh >= 1e9) return trimNum(mh / 1e9, 2) + " PH/s";
-  if (mh >= 1e6) return trimNum(mh / 1e6, 2) + " TH/s";
-  return trimNum(mh / 1e3, 2) + " GH/s";
+/* Auto-scale a raw GH/s value into a human string */
+function formatPower(gh) {
+  if (!isFinite(gh) || gh <= 0) return "0 GH/s";
+  if (gh >= 1e12) return trimNum(gh / 1e12, 3) + " ZH/s";
+  if (gh >= 1e9) return trimNum(gh / 1e9, 3) + " EH/s";
+  if (gh >= 1e6) return trimNum(gh / 1e6, 2) + " PH/s";
+  if (gh >= 1e3) return trimNum(gh / 1e3, 2) + " TH/s";
+  return trimNum(gh, 2) + " GH/s";
 }
 
 function trimNum(n, maxDecimals) {
@@ -37,7 +41,8 @@ function formatCoin(n) {
 
 const usdFmt = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 function formatUsd(n) {
-  if (Math.abs(n) < 0.01 && n !== 0) return "$" + n.toFixed(4);
+  const abs = Math.abs(n);
+  if (abs !== 0 && abs < 0.01) return (n < 0 ? "-$" : "$") + abs.toPrecision(2);
   return usdFmt.format(n);
 }
 
@@ -50,31 +55,35 @@ function leagueTierKey(leagueTitle) {
   return known.includes(first) ? first : "default";
 }
 
+/* USD price for a coin row given the prices map */
+function coinUsdPrice(ticker, coin, prices, mining) {
+  if (coin.coinGeckoId && prices[coin.coinGeckoId] != null) return prices[coin.coinGeckoId];
+  if (ticker === "RLT") return mining.rltUsdPrice;
+  if (ticker === "USDT") return 1.0;
+  return null;
+}
+
 /*
  * Estimate earnings for every coin.
- * userPowerMH: total user power in MH/s
- * mining: data/mining.json object
- * prices: { coinGeckoId: usdPrice }
- * tierKey: league tier (scales league power)
+ * userPowerGH: total user power in GH/s (raw API unit)
  * Returns array sorted by USD/day desc.
  */
-function estimateEarnings(userPowerMH, mining, prices, tierKey = "default") {
-  const userEH = userPowerMH / 1e12;
+function estimateEarnings(userPowerGH, mining, prices, tierKey = "default") {
+  const userZH = userPowerGH / 1e12;
   const mult = (mining.leagueTierMultiplier[tierKey] ?? mining.leagueTierMultiplier.default) || 1;
   const rows = [];
   for (const [ticker, coin] of Object.entries(mining.coins)) {
-    const leagueEH = (mining.leaguePowerEH[ticker] || 1) * mult;
-    const share = leagueEH > 0 ? userEH / leagueEH : 0;
+    const leagueZH = (mining.leaguePowerZH[ticker] || 1) * mult;
+    const share = leagueZH > 0 ? userZH / leagueZH : 0;
     const perDay = coin.dailyReward * share;
     const perBlock = perDay / mining.blocksPerDay;
-    let usdPrice = null;
-    if (coin.coinGeckoId && prices[coin.coinGeckoId] != null) usdPrice = prices[coin.coinGeckoId];
-    else if (ticker === "RLT") usdPrice = mining.rltUsdPrice;
+    const usdPrice = coinUsdPrice(ticker, coin, prices, mining);
     const usdDay = usdPrice != null ? perDay * usdPrice : null;
     rows.push({
       ticker, name: coin.name, color: coin.color || "#8984b1",
       perBlock, perDay, perWeek: perDay * 7, perMonth: perDay * 30,
-      usdDay, usdMonth: usdDay != null ? usdDay * 30 : null,
+      usdDay, usdWeek: usdDay != null ? usdDay * 7 : null,
+      usdMonth: usdDay != null ? usdDay * 30 : null,
     });
   }
   rows.sort((a, b) => (b.usdDay ?? -1) - (a.usdDay ?? -1));
@@ -82,8 +91,8 @@ function estimateEarnings(userPowerMH, mining, prices, tierKey = "default") {
 }
 
 /* Classic manual calculation (kept from the original tool's spirit) */
-function manualReward({ networkPowerMH, userPowerMH, blockReward, secondsPerBlock }, usdPrice) {
-  const share = networkPowerMH > 0 ? userPowerMH / networkPowerMH : 0;
+function manualReward({ networkPowerGH, userPowerGH, blockReward, secondsPerBlock }, usdPrice) {
+  const share = networkPowerGH > 0 ? userPowerGH / networkPowerGH : 0;
   const perBlock = blockReward * share;
   const blocksDay = 86400 / secondsPerBlock;
   const daily = perBlock * blocksDay;
@@ -97,4 +106,43 @@ function manualReward({ networkPowerMH, userPowerMH, blockReward, secondsPerBloc
     usdWeekly: usdPrice != null ? daily * 7 * usdPrice : null,
     usdMonthly: usdPrice != null ? daily * 30 * usdPrice : null,
   };
+}
+
+/*
+ * Season Pass analysis.
+ * dailyUsd: user's current estimated USD/day (best coin)
+ * pass: mining.seasonPass, rltUsd: number
+ * Returns comparison of standard vs complete pass.
+ */
+function analyzeSeasonPass(dailyUsd, pass, rltUsd) {
+  const options = [
+    { key: "standard", costRlt: pass.standardCostRlt },
+    { key: "complete", costRlt: pass.completeCostRlt },
+  ];
+  return options.map((o) => {
+    const costUsd = o.costRlt * rltUsd;
+    const bonusMiningUsd = dailyUsd * (pass.bonusPowerPercent / 100) * pass.seasonDays;
+    const bonusRltUsd = pass.dailyBonusRlt * rltUsd * pass.seasonDays;
+    const totalGainUsd = bonusMiningUsd + bonusRltUsd;
+    const netUsd = totalGainUsd - costUsd;
+    const roiPct = costUsd > 0 ? (netUsd / costUsd) * 100 : 0;
+    const dailyGainUsd = totalGainUsd / pass.seasonDays;
+    const paybackDays = dailyGainUsd > 0 ? costUsd / dailyGainUsd : Infinity;
+    return { ...o, costUsd, totalGainUsd, netUsd, roiPct, paybackDays, worthIt: netUsd > 0 };
+  });
+}
+
+/*
+ * Investment / ROI analysis: invest X USD -> RLT -> miners -> power -> earnings.
+ * investUsd: number; mining: data object; prices map.
+ * Returns { powerGH, rlt, rows (earnings, sorted), best, monthlyUsd, paybackMonths }
+ */
+function analyzeInvestment(investUsd, mining, prices, tierKey = "default") {
+  const rlt = investUsd / mining.rltUsdPrice;
+  const powerGH = rlt * mining.minerMarket.thPerRlt * 1e3; // TH/s -> GH/s
+  const rows = estimateEarnings(powerGH, mining, prices, tierKey);
+  const best = rows.find((r) => r.usdDay != null) || null;
+  const monthlyUsd = best ? best.usdMonth : 0;
+  const paybackMonths = monthlyUsd > 0 ? investUsd / monthlyUsd : Infinity;
+  return { powerGH, rlt, rows, best, monthlyUsd, paybackMonths };
 }

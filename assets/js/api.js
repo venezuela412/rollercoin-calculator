@@ -13,29 +13,29 @@ function parseProfileInput(input) {
   return null;
 }
 
-/* Fetch JSON trying direct, then the configured worker, then public proxies */
-async function fetchJsonWithFallback(url, timeoutMs = 12000) {
+/* Fetch JSON: dedicated worker first (most reliable), then direct, then public proxies */
+async function fetchJsonWithFallback(url, timeoutMs = 15000) {
   const attempts = [];
-  attempts.push(() => fetch(url, { mode: "cors" }));
   if (CONFIG.workerProxy) {
-    attempts.push(() =>
-      fetch(`${CONFIG.workerProxy.replace(/\/+$/, "")}/?url=${encodeURIComponent(url)}`)
+    attempts.push((signal) =>
+      fetch(`${CONFIG.workerProxy.replace(/\/+$/, "")}/?url=${encodeURIComponent(url)}`, { signal })
     );
   }
+  attempts.push((signal) => fetch(url, { mode: "cors", signal }));
   for (const p of CONFIG.publicProxies) {
-    attempts.push(() => fetch(p(url)));
+    attempts.push((signal) => fetch(p(url), { signal }));
   }
   let lastErr = null;
   for (const make of attempts) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), timeoutMs);
-      const res = await make();
-      clearTimeout(t);
+      const res = await make(ctrl.signal);
+      clearTimeout(timer);
       if (!res.ok) throw new Error("HTTP " + res.status);
-      const json = await res.json();
-      return json;
+      return await res.json();
     } catch (e) {
+      clearTimeout(timer);
       lastErr = e;
     }
   }
@@ -49,7 +49,7 @@ async function getPublicProfile(username) {
   return json.data;
 }
 
-/* Power breakdown (raw units are MH/s) */
+/* Power breakdown (raw units are GH/s) */
 async function getUserPower(avatarId) {
   const json = await fetchJsonWithFallback(CONFIG.rollercoin.powerData(avatarId));
   if (!json || !json.success) throw new Error("Power data not available");

@@ -1,30 +1,46 @@
 {
   "updatedAt": "2026-07-25",
-  "note": "Approximate community-maintained mining parameters. RollerCoin does not publish per-league network power publicly, so these values are estimates and may drift from in-game values. Contributions welcome via PR.",
+  "note": "Approximate community-maintained mining parameters. RollerCoin does not publish per-league network power publicly, so these values are estimates and may drift from in-game values. Coin list refreshed from the live currencies config (2026-07-25). Contributions welcome via PR.",
   "blocksPerDay": 144,
   "secondsPerBlock": 600,
   "rltUsdPrice": 1.0,
   "coins": {
-    "BTC":  { "name": "Bitcoin",   "color": "#f7931a", "coinGeckoId": "bitcoin",       "dailyReward": 0.00037 },
-    "ETH":  { "name": "Ethereum",  "color": "#627eea", "coinGeckoId": "ethereum",      "dailyReward": 0.0065 },
-    "DOGE": { "name": "Dogecoin",  "color": "#c2a633", "coinGeckoId": "dogecoin",      "dailyReward": 135 },
-    "BNB":  { "name": "BNB",       "color": "#f3ba2f", "coinGeckoId": "binancecoin",   "dailyReward": 0.042 },
-    "POL":  { "name": "Polygon",   "color": "#8247e5", "coinGeckoId": "matic-network", "dailyReward": 5.2 },
-    "SOL":  { "name": "Solana",    "color": "#14f195", "coinGeckoId": "solana",        "dailyReward": 0.22 },
-    "LTC":  { "name": "Litecoin",  "color": "#345d9d", "coinGeckoId": "litecoin",      "dailyReward": 0.014 },
-    "XRP":  { "name": "XRP",       "color": "#00aae4", "coinGeckoId": "ripple",        "dailyReward": 11.5 },
-    "TRX":  { "name": "Tron",      "color": "#eb0029", "coinGeckoId": "tron",          "dailyReward": 58 },
-    "RLT":  { "name": "RollerToken", "color": "#ffcf3f", "coinGeckoId": null,          "dailyReward": 19 },
-    "RST":  { "name": "Roller Season Token", "color": "#8a8fa3", "coinGeckoId": null,  "dailyReward": 145 }
+    "BTC":  { "name": "Bitcoin",   "color": "#f7931a", "coinGeckoId": "bitcoin",       "dailyReward": 0.004 },
+    "ETH":  { "name": "Ethereum",  "color": "#987eff", "coinGeckoId": "ethereum",      "dailyReward": 0.07 },
+    "DOGE": { "name": "Dogecoin",  "color": "#c2a633", "coinGeckoId": "dogecoin",      "dailyReward": 1400 },
+    "BNB":  { "name": "BNB",       "color": "#f3ba2f", "coinGeckoId": "binancecoin",   "dailyReward": 0.44 },
+    "POL":  { "name": "Polygon",   "color": "#8247e5", "coinGeckoId": "matic-network", "dailyReward": 55 },
+    "SOL":  { "name": "Solana",    "color": "#5696d6", "coinGeckoId": "solana",        "dailyReward": 2.3 },
+    "LTC":  { "name": "Litecoin",  "color": "#345d9d", "coinGeckoId": "litecoin",      "dailyReward": 0.15 },
+    "XRP":  { "name": "XRP",       "color": "#cfcfcf", "coinGeckoId": "ripple",        "dailyReward": 120 },
+    "TRX":  { "name": "Tron",      "color": "#ff3b30", "coinGeckoId": "tron",          "dailyReward": 600 },
+    "USDT": { "name": "Tether",    "color": "#26a17b", "coinGeckoId": "tether",        "dailyReward": 4 },
+    "ALGO": { "name": "Algorand",  "color": "#ef34b8", "coinGeckoId": "algorand",      "dailyReward": 35 },
+    "RLT":  { "name": "RollerToken", "color": "#03e1e4", "coinGeckoId": null,          "dailyReward": 200 },
+    "RST":  { "name": "Roller Season Token", "color": "#82e73b", "coinGeckoId": null,  "dailyReward": 1500 },
+    "HMT":  { "name": "Hamster Token", "color": "#e771fe", "coinGeckoId": null,        "dailyReward": 1400 }
   },
-  "leaguePowerEH": {
-    "_comment": "Estimated TOTAL power mining each coin inside an average mid-tier league, in EH/s. Tier multipliers below scale these for lower/higher leagues.",
-    "BTC": 900, "ETH": 700, "DOGE": 620, "BNB": 520, "POL": 420,
-    "SOL": 500, "LTC": 460, "XRP": 410, "TRX": 360, "RLT": 820, "RST": 320
+  "leaguePowerZH": {
+    "_comment": "Estimated TOTAL power mining each coin inside an average mid-tier (platinum) league, in Zh/s (1 Zh/s = 1000 Eh/s). Top players have 40-200 Zh/s each (leaderboard, 2026-07), so league totals are in the thousands. Calibrate against the in-game 'League Power' panel and send a PR.",
+    "BTC": 3000, "ETH": 2200, "DOGE": 2000, "BNB": 1600, "POL": 1300,
+    "SOL": 1700, "LTC": 1400, "XRP": 1200, "TRX": 1100, "USDT": 900, "ALGO": 700,
+    "RLT": 2600, "RST": 1000, "HMT": 800
   },
   "leagueTierMultiplier": {
     "_comment": "Approximate scaling of league total power by tier. Higher leagues concentrate more power.",
     "bronze": 0.15, "silver": 0.30, "gold": 0.55, "platinum": 1.0,
     "diamond": 1.6, "master": 2.5, "grandmaster": 3.5, "elite": 5.0, "default": 1.0
+  },
+  "seasonPass": {
+    "_comment": "Approximate season pass parameters. Edit with current in-game values.",
+    "seasonDays": 60,
+    "standardCostRlt": 15,
+    "completeCostRlt": 30,
+    "bonusPowerPercent": 30,
+    "dailyBonusRlt": 0.5
+  },
+  "minerMarket": {
+    "_comment": "Approximate miner market rate: how much mining power 1 RLT buys on average.",
+    "thPerRlt": 40
   }
 }

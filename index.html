@@ -6,8 +6,8 @@
   <title>RollerCoin Calculator · Smart Edition</title>
   <meta name="description" content="Free RollerCoin earnings calculator: paste your profile and instantly see estimated daily earnings per coin, the best coin to mine and your optimal power split. English & Español.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐹</text></svg>">
-  <link rel="stylesheet" href="assets/css/font.css">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/font.css?v=3">
+  <link rel="stylesheet" href="assets/css/style.css?v=3">
   <meta property="og:title" content="RollerCoin Calculator · Smart Edition">
   <meta property="og:description" content="Paste your RollerCoin profile and estimate your daily earnings per coin — no manual input. Free & open source. EN/ES.">
   <meta property="og:type" content="website">
@@ -25,6 +25,8 @@
     <ul>
       <li><a href="#profile" data-tab="secProfile" class="active" data-i18n="nav_profile">Profile Earnings</a></li>
       <li><a href="#best" data-tab="secBest" data-i18n="nav_best">Best Coins to Mine</a></li>
+      <li><a href="#season" data-tab="secSeason" data-i18n="nav_season">Season Pass</a></li>
+      <li><a href="#roi" data-tab="secRoi" data-i18n="nav_roi">ROI / Invest</a></li>
       <li><a href="#manual" data-tab="secManual" data-i18n="nav_manual">Manual Calculator</a></li>
     </ul>
   </nav>
@@ -117,6 +119,67 @@
             </thead>
             <tbody id="bestBody"></tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SEASON PASS ============ -->
+    <section id="secSeason" class="hidden">
+      <div class="roller-section">
+        <h2 class="section-title" data-i18n="season_title">Season Pass analyzer</h2>
+        <p id="seasonUsing" class="muted"></p>
+        <div class="table-responsive">
+          <table class="roller-table">
+            <thead>
+              <tr>
+                <th data-i18n="col_option">Option</th>
+                <th data-i18n="col_cost">Cost</th>
+                <th data-i18n="col_gain">Season gain</th>
+                <th data-i18n="col_net">Net</th>
+                <th data-i18n="col_roi">ROI</th>
+                <th data-i18n="col_payback">Payback</th>
+              </tr>
+            </thead>
+            <tbody id="seasonBody"></tbody>
+          </table>
+        </div>
+        <p id="seasonNote" class="muted"></p>
+      </div>
+    </section>
+
+    <!-- ============ ROI / INVEST ============ -->
+    <section id="secRoi" class="hidden">
+      <div class="roller-section">
+        <h2 class="section-title" data-i18n="roi_title">Investment &amp; ROI calculator</h2>
+        <p class="muted" data-i18n="roi_intro">How much would you earn if you invested in miners today? Approximate, no discounts applied.</p>
+        <div class="form-group">
+          <label for="roiAmount" data-i18n="roi_amount_label">Investment amount (USD)</label>
+          <div class="roller-input-group">
+            <input id="roiAmount" type="number" class="roller-input" value="100" min="1" step="any">
+          </div>
+        </div>
+        <div class="btn-row">
+          <div class="tree-dimensional-button btn-default">
+            <input id="roiBtn" type="button" value="Calculate ROI" data-i18n-value="roi_button">
+          </div>
+        </div>
+        <div id="roiResults" class="hidden">
+          <p id="roiSummary"></p>
+          <p id="roiBest"></p>
+          <p id="roiPayback"></p>
+          <div class="table-responsive">
+            <table class="roller-table">
+              <thead>
+                <tr>
+                  <th data-i18n="col_coin">Coin</th>
+                  <th data-i18n="col_usd_daily">USD / day</th>
+                  <th data-i18n="col_weekly">USD / week</th>
+                  <th data-i18n="col_monthly">USD / month</th>
+                </tr>
+              </thead>
+              <tbody id="roiBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -231,10 +294,10 @@
     </section>
   </footer>
 
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/config.js"></script>
-  <script src="assets/js/api.js"></script>
-  <script src="assets/js/calculator.js"></script>
-  <script src="assets/js/app.js"></script>
+  <script src="assets/js/i18n.js?v=3"></script>
+  <script src="assets/js/config.js?v=3"></script>
+  <script src="assets/js/api.js?v=3"></script>
+  <script src="assets/js/calculator.js?v=3"></script>
+  <script src="assets/js/app.js?v=3"></script>
 </body>
 </html>
