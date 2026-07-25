@@ -31,6 +31,36 @@
 >
 > ⚠️ **Todos los valores son aproximados.** RollerCoin no publica el poder de red por liga en vivo, así que las ganancias son estimaciones basadas en datos de la comunidad + precios de mercado en vivo. Los resultados reales variarán.
 
+## 📖 How to use / Cómo usar
+
+**EN**
+
+1. **Open the app** → [venezuela412.github.io/rollercoin-calculator](https://venezuela412.github.io/rollercoin-calculator/)
+2. **Get your profile link** — in RollerCoin, open your public profile; the URL looks like `https://rollercoin.com/p/yourname` (any public profile works, e.g. `https://rollercoin.com/p/cryptorell`).
+3. **Paste it** in the box and hit **Analyze** — no typing power numbers, no mistakes.
+4. **Read your results:**
+   - ⚡ **Power breakdown** — total, miners, bonus, games and temp power, plus your league.
+   - 📊 **Estimated earnings table** — what you earn per block / day / month with each coin, in crypto and USD (live prices).
+   - 🏆 **BEST badge** — the most profitable coin for you right now.
+   - 💡 **Smart advice** — recommended coin and split configuration (e.g. 100% BTC, or 70/30 if you want two withdrawal tracks).
+5. **Explore the tabs:** *Best Coins to Mine* (ranking for your power) and *Manual Calculator* (classic mode, auto-filled).
+6. **Share your analysis** — the app supports deep links: `https://venezuela412.github.io/rollercoin-calculator/?p=yourname` auto-analyzes that profile.
+
+**ES**
+
+1. **Abre la app** → [venezuela412.github.io/rollercoin-calculator](https://venezuela412.github.io/rollercoin-calculator/)
+2. **Copia el enlace de tu perfil** — en RollerCoin abre tu perfil público; la URL es como `https://rollercoin.com/p/tunombre` (vale cualquier perfil público).
+3. **Pégalo** en la caja y pulsa **Analizar** — sin escribir números, sin errores.
+4. **Lee tus resultados:**
+   - ⚡ **Desglose de poder** — total, mineros, bonus, juegos y temp, además de tu liga.
+   - 📊 **Tabla de ganancias estimadas** — lo que ganas por bloque / día / mes con cada moneda, en cripto y USD (precios en vivo).
+   - 🏆 **Etiqueta MEJOR** — la moneda más rentable para ti ahora mismo.
+   - 💡 **Consejo inteligente** — moneda recomendada y configuración de split (ej. 100% BTC, o 70/30 si quieres dos vías de retiro).
+5. **Explora las pestañas:** *Mejores monedas* (ranking con tu poder) y *Calculadora manual* (modo clásico, auto-rellenado).
+6. **Comparte tu análisis** — la app admite enlaces directos: `https://venezuela412.github.io/rollercoin-calculator/?p=tunombre` analiza ese perfil automáticamente.
+
+> 🌐 Switch language anytime with the **Español / English** button in the header. / Cambia el idioma cuando quieras con el botón del encabezado.
+
 ## 🚀 How it works / Cómo funciona
 
 ```
@@ -44,6 +74,7 @@ Live prices (CoinGecko) + community mining data
 
 - No accounts, no API keys, no manual fields.
 - 100% static site — hosted free on **GitHub Pages**.
+- Profile data is served through a free **Cloudflare Worker** CORS proxy (see [`cloudflare-worker/`](cloudflare-worker/worker.js)) with public-proxy fallbacks.
 - Mining parameters live in [`data/mining.json`](data/mining.json) and can be improved by anyone via Pull Request.
 
 ## 🛠️ Run locally / Ejecutar en local
