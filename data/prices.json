@@ -1,17 +1,17 @@
 {
-  "updatedAt": "2026-10-06T13:22:16+00:00",
+  "updatedAt": "2026-10-06T22:40:22+00:00",
   "source": "coingecko",
   "usd": {
-    "algorand": 0.125311,
-    "binancecoin": 784.13,
-    "bitcoin": 86077,
-    "dogecoin": 0.095445,
-    "ethereum": 2712.12,
-    "litecoin": 69.92,
+    "algorand": 0.123709,
+    "binancecoin": 779.46,
+    "bitcoin": 85521,
+    "dogecoin": 0.093328,
+    "ethereum": 2695.5,
+    "litecoin": 68.85,
     "matic-network": 0.126156,
-    "ripple": 1.51,
-    "solana": 120.33,
-    "tether": 0.999913,
-    "tron": 0.335298
+    "ripple": 1.5,
+    "solana": 121.09,
+    "tether": 0.999941,
+    "tron": 0.335668
   }
 }
